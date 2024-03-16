@@ -2,7 +2,7 @@
 > Bug Hunting
 
 -------
-![[Pasted image 20240316212216.png]]
+![recon workflow](workflow.png)
 
 1. Initial Findings
 	First use amass to gather a list of available subdomains
