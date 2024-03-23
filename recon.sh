@@ -51,28 +51,24 @@ subdomain_enum() {
     log_msg "Subfinder" "Enumeration Started" 1
     log_msg "Amass" "Enumeration Started" 1
 
-    # (subfinder -silent -dL $TARGETFILE -v -o OUTFILE_SF; log_msg "Subfinder" "Enumeration completed" 0) &
-    # (amass enum -passive -df $TARGETFILE -o $OUTFILE_A; log_msg "Amass" "Enumeration completed" 0) &
+    (subfinder -dL $TARGETFILE -v -o OUTFILE_SF; log_msg "Subfinder" "Enumeration completed" 0) &
+    (amass enum -passive -df $TARGETFILE -o $OUTFILE_A; log_msg "Amass" "Enumeration completed" 0) &
 
-    # wait %1
-    # wait %2
+    wait %1
+    wait %2
     
     # Getting subdomains from the output files
-    cat $OUTFILE_A | grep -i fqdn > domain-temp.1
-    cat domain-temp.1 | cut -d " " -f1 | grep -f $TARGETFILE > domain-temp.2
-    cat domain-temp.2 | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | anew -q $SUBDFILE
+    cat $OUTFILE_A | grep -i fqdn | cut -d " " -f1 | grep -f $TARGETFILE | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | anew $SUBDFILE
 
-    cat $OUTFILE_SF | grep -f $TARGETFILE > domain-temp.3
-    cat domain-temp.3 | anew $SUBDFILE -q && log_msg "Anew (subfinder, amass)" "Initial Subdomains file created (`cat $SUBDFILE | wc -l`)" 0
-    rm domain-temp.*
+    cat $OUTFILE_SF | grep -f $TARGETFILE | anew $SUBDFILE && log_msg "Anew (subfinder, amass)" "Initial Subdomains file created (`cat $SUBDFILE | wc -l`)" 0
 
     log_msg "httpx" "Looking for live hosts" 1
 
-    cat $SUBDFILE | httpx -silent -o $PFILE >/dev/null && log_msg "httpx" "Live hosts file saved `cat $PFILE | wc -l`" 0
+    cat $SUBDFILE | httpx -o $PFILE >/dev/null && log_msg "httpx" "Live hosts file saved `cat $PFILE | wc -l`" 0
 
     log_msg "Waybackurls" "Looking for urls" 1
 
-    cat $PFILE | waybackurls | anew $WFILE -q && log_msg "Waybackurls" "Waybackurls urls saved" 0
+    cat $PFILE | waybackurls | anew $WFILE && log_msg "Waybackurls" "Waybackurls urls saved" 0
     
     log_msg "Uro" "Finding uniqe urls" 1
 
