@@ -51,7 +51,7 @@ subdomain_enum() {
     log_msg "Subfinder" "Enumeration Started" 1
     log_msg "Amass" "Enumeration Started" 1
 
-    (subfinder -dL $TARGETFILE -v -o OUTFILE_SF; log_msg "Subfinder" "Enumeration completed" 0) &
+    (subfinder -dL $TARGETFILE -v -o $OUTFILE_SF; log_msg "Subfinder" "Enumeration completed" 0) &
     (amass enum -passive -df $TARGETFILE -o $OUTFILE_A; log_msg "Amass" "Enumeration completed" 0) &
 
     wait %1
